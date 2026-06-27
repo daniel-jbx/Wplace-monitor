@@ -1,0 +1,45 @@
+name: Pixel Region Monitor
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+env:
+  PIXEL_X: '1227359'
+  PIXEL_Y: '515763'
+  WIDTH: '50'
+  HEIGHT: '50'
+  TILE_BASE_URL: 'https://backend.wplace.live/files/s0/tiles/{x}/{y}.png'
+  SNAPSHOT_FILE: 'snapshot.png'
+  NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests Pillow
+      - name: Run monitor
+        id: script
+        run: python monitor.py
+      - name: Commit updated snapshot
+        if: steps.script.outputs.commit_needed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add ${{ env.SNAPSHOT_FILE }}
+          git commit -m "Update snapshot [skip ci]" || echo "Nothing to commit"
+          git push
+      - name: Notify phone
+        if: steps.script.outputs.changed == 'true' && env.NTFY_TOPIC != ''
+        run: |
+          curl -H "Title: wplace change" \
+               -d "Region ($PIXEL_X,$PIXEL_Y) ${WIDTH}x${HEIGHT} changed" \
+               "https://ntfy.sh/$NTFY_TOPIC"
