@@ -38,6 +38,6 @@ jobs:
       - name: Notify phone
         if: steps.script.outputs.changed == 'true' && env.NTFY_TOPIC != ''
         run: |
-          curl -H "Title: wplace change" \
-               -d "Region ($PIXEL_X,$PIXEL_Y) ${WIDTH}x${HEIGHT} changed" \
+          curl -H "Title: Activity in Texas" \
+               -d "Monitored region changed" \
                "https://ntfy.sh/$NTFY_TOPIC"
