@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
 
 env:
-  PIXEL_X: '1227763'
-  PIXEL_Y: '515359'
-  WIDTH: '50'
-  HEIGHT: '50'
+  PIXEL_X: '537447'
+  PIXEL_Y: '780723'
+  WIDTH: '74'
+  HEIGHT: '44'
   TILE_BASE_URL: 'https://backend.wplace.live/files/s0/tiles/{x}/{y}.png'
   SNAPSHOT_FILE: 'snapshot.png'
   NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
